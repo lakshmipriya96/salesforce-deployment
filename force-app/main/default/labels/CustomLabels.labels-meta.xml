@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Jenkins_Test_Label</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Label for Jenkins test deploy</shortDescription>
+        <value>This is a Jenkins deploy test</value>
+    </labels>
+</CustomLabels>
