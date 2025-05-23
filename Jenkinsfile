@@ -9,7 +9,7 @@ pipeline {
     }
   }
 
-  environment {
+  /*environment {
     // Inject Salesforce org auth URLs as secret text credentials from Jenkins
     SF_AUTH_DEV   = credentials('sf-auth-dev')
     SF_AUTH_INT   = credentials('sf-auth-int')
@@ -68,5 +68,5 @@ pipeline {
         sh 'sf deploy metadata --target-org StageOrg --source-dir force-app --test-level RunLocalTests'
       }
     }
-  }
+  }*/
 }
