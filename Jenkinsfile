@@ -3,6 +3,9 @@
 
 pipeline {
   agent any  // Run on any available Jenkins agent
+  docker {
+      image 'node:18' // Node.js with npm
+    }
 
   environment {
     // These are secret text credentials stored in Jenkins → Credentials → Global
