@@ -2,11 +2,7 @@
 // It uses SFDX CLI, credentials stored in Jenkins, and includes a manual QA approval step before Stage.
 
 pipeline {
-  agent {
-    docker {
-      image 'node:18'
-    }
-  }
+  agent any
 
   environment {
     // These are secret text credentials stored in Jenkins → Credentials → Global
@@ -19,7 +15,7 @@ pipeline {
     // 1. Install Salesforce CLI (SFDX)
     stage('Install SFDX CLI') {
       steps {
-        sh 'npm install sfdx-cli --global'
+        sh 'npm install -g sfdx-cli'
       }
     }
 
