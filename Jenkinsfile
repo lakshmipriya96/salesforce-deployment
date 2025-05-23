@@ -1,15 +1,8 @@
 // Jenkins Pipeline to deploy Salesforce metadata across Dev → INT → Stage
 pipeline {
-  agent any
-  stages {
-    stage('Test Shell') {
-      steps {
-        sh 'echo Hello from Jenkins shell'
-      }
-    }
-  }
+  agent any  // Use any available Jenkins agent
 
-  /*environment {
+  environment {
     // Inject Salesforce org auth URLs as secret text credentials from Jenkins
     SF_AUTH_DEV   = credentials('sf-auth-dev')
     SF_AUTH_INT   = credentials('sf-auth-int')
@@ -17,7 +10,13 @@ pipeline {
   }
 
   stages {
-
+    
+    //testing
+    stage('Test Shell') {
+      steps {
+        sh 'echo Hello from Jenkins shell'
+      }
+    }
     // 1. Authenticate and deploy to Dev Org
     stage('Authenticate Dev Org') {
       steps {
@@ -68,5 +67,5 @@ pipeline {
         sh 'sf deploy metadata --target-org StageOrg --source-dir force-app --test-level RunLocalTests'
       }
     }
-  }*/
+  }
 }
