@@ -1,36 +1,74 @@
-// Jenkins Pipeline to deploy Salesforce metadata to Dev Org
+// This Jenkinsfile automates deployments to Dev, INT, and Stage Salesforce orgs.
+// It uses SFDX CLI, credentials stored in Jenkins, and includes a manual QA approval step before Stage.
+
 pipeline {
-  agent any  // Use any available Jenkins agent
+  agent any  // Run on any available Jenkins agent
 
   environment {
-    // Inject the secret text credential named 'sf-auth-dev' into the pipeline
-    SF_AUTH_DEV = credentials('sf-auth-dev')
+    // These are secret text credentials stored in Jenkins → Credentials → Global
+    SF_AUTH_DEV   = credentials('sf-auth-dev')
+    SF_AUTH_INT   = credentials('sf-auth-int')
+    SF_AUTH_STAGE = credentials('sf-auth-stage')
   }
 
   stages {
-    stage('Install Salesforce CLI') {
+    // 1. Install Salesforce CLI (SFDX)
+    stage('Install SFDX CLI') {
       steps {
-        // Install Salesforce CLI globally
         sh 'npm install sfdx-cli --global'
       }
     }
 
-    stage('Authenticate to Dev Org') {
+    // 2. Authenticate to Dev Org
+    stage('Authenticate Dev Org') {
       steps {
-        // Write the Auth URL secret into a file
-        writeFile file: 'auth.txt', text: "${SF_AUTH_DEV}"
-        
-        // Authenticate to the Dev Org using the Auth URL
-        // -a DevOrg sets the alias name to 'DevOrg'
-        sh 'sfdx auth:sfdxurl:store -f auth.txt -a DevOrg'
+        // Write the Dev auth URL to a file, then auth using SFDX
+        writeFile file: 'auth-dev.txt', text: "${SF_AUTH_DEV}"
+        sh 'sfdx auth:sfdxurl:store -f auth-dev.txt -a DevOrg'
       }
     }
 
-    stage('Deploy to Dev Org') {
+    // 3. Deploy to Dev Org
+    stage('Deploy to Dev') {
       steps {
-        // Deploy metadata from the force-app directory to DevOrg
-        // RunLocalTests ensures Apex tests in the org are executed
         sh 'sfdx force:source:deploy -u DevOrg -p force-app --testlevel RunLocalTests'
+      }
+    }
+
+    // 4. Authenticate to INT Org
+    stage('Authenticate INT Org') {
+      steps {
+        writeFile file: 'auth-int.txt', text: "${SF_AUTH_INT}"
+        sh 'sfdx auth:sfdxurl:store -f auth-int.txt -a IntOrg'
+      }
+    }
+
+    // 5. Deploy to INT Org
+    stage('Deploy to INT') {
+      steps {
+        sh 'sfdx force:source:deploy -u IntOrg -p force-app --testlevel RunLocalTests'
+      }
+    }
+
+    // 6. Pause and wait for QA to approve deployment to Stage
+    stage('QA Approval for Stage') {
+      steps {
+        input message: 'Has QA approved deployment to Stage?'
+      }
+    }
+
+    // 7. Authenticate to Stage Org
+    stage('Authenticate Stage Org') {
+      steps {
+        writeFile file: 'auth-stage.txt', text: "${SF_AUTH_STAGE}"
+        sh 'sfdx auth:sfdxurl:store -f auth-stage.txt -a StageOrg'
+      }
+    }
+
+    // 8. Deploy to Stage Org
+    stage('Deploy to Stage') {
+      steps {
+        sh 'sfdx force:source:deploy -u StageOrg -p force-app --testlevel RunLocalTests'
       }
     }
   }
