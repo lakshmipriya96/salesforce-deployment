@@ -2,10 +2,11 @@
 // It uses SFDX CLI, credentials stored in Jenkins, and includes a manual QA approval step before Stage.
 
 pipeline {
-  agent any  // Run on any available Jenkins agent
-  docker {
-      image 'node:18' // Node.js with npm
+  agent {
+    docker {
+      image 'node:18'
     }
+  }
 
   environment {
     // These are secret text credentials stored in Jenkins → Credentials → Global
