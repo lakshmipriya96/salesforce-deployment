@@ -1,6 +1,13 @@
 // Jenkins Pipeline to deploy Salesforce metadata across Dev → INT → Stage
 pipeline {
-  agent any  // Use any available Jenkins agent
+  agent any
+  stages {
+    stage('Test Shell') {
+      steps {
+        sh 'echo Hello from Jenkins shell'
+      }
+    }
+  }
 
   environment {
     // Inject Salesforce org auth URLs as secret text credentials from Jenkins
